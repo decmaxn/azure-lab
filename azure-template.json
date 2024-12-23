@@ -50,10 +50,14 @@
         "name": "[variables('nicName')]",
         "location": "[parameters('location')]",
         "dependsOn": [
+          "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName'), '-nsg'))]",
           "[resourceId('Microsoft.Network/virtualNetworks', 'myVnet')]",
           "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
         ],
         "properties": {
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName'), '-nsg'))]"
+          },
           "ipConfigurations": [
             {
               "name": "ipconfig1",
