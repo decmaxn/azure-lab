@@ -36,3 +36,7 @@ ResourceType     Locations    Name          Zones    Restrictions
 ---------------  -----------  ------------  -------  ----------------------------------------------------------------------
 virtualMachines  eastus       Standard_B1s  1,2,3    NotAvailableForSubscription, type: Zone, locations: eastus, zones: 2,1
 ```
+Comfirm the deployment is successful.
+```bash
+$ az deployment group show --resource-group trg --name azure-template
+```
