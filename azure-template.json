@@ -111,8 +111,32 @@
                 "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
               }
             ]
-          }
+          },
+          "billingProfile": {
+            "maxPrice": -1
+          },
+          "priority": "Spot"
         }
+      },
+      {
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "apiVersion": "2021-03-01",
+        "name": "[concat(parameters('vmName'), '/CustomScriptExtension')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "publisher": "Microsoft.Azure.Extensions",
+          "type": "CustomScript",
+          "typeHandlerVersion": "2.1",
+          "settings": {
+            "fileUris": [
+              "https://gist.githubusercontent.com/victoronto/741d17398a0b29026f9bf5b202e1562e/raw/07f40e3392ab0175a63b400f80aae50f7f56893e/stable-diffusion-webui-install.sh"
+            ],
+            "commandToExecute": "[concat('bash stable-diffusion-webui-install.sh ', parameters('adminUsername'))]"
+          }
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+        ]
       },
       {
         "type": "Microsoft.Network/networkSecurityGroups",
