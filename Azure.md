@@ -5,6 +5,8 @@ $ az account set --subscription "Free Trial"
 $ az account show --query name
 $ az account show --query id # Later use this id shown: 83cb1fd7-2152-4b72-b3c8-5970858ef674
 $ az ad signed-in-user show 
+
+$ az group create --name trg --location eastus
 ```
 Storage commands
 ```bash
@@ -92,3 +94,5 @@ Manually run this https://github.com/theonemule/stable-diffusion-webui-azure/blo
 $ wget https://gist.githubusercontent.com/victoronto/741d17398a0b29026f9bf5b202e1562e/raw/07f40e3392ab0175a63b400f80aae50f7f56893e/stable-diffusion-webui-install.sh
 ```
 Adding export DEBIAN_FRONTEND=noninteractive, then made it available for public as shown above.
+
+Now I am ready to test the ARM template again, to clean up first, do ```az group delete --name trg --yes```
