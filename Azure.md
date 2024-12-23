@@ -20,3 +20,19 @@ $ az ad signed-in-user show --query id -o tsv | az role assignment create \
 $ az storage container create --account-name storeibrzj7ov3bnpo --name victoronto --auth-mode login
 $ az storage blob upload --account-name storeibrzj7ov3bnpo --container-name victoronto --name test --file test --auth-mode login
 ```
+
+VM commands
+```bash
+$ az deployment group create \
+    --resource-group trg \
+    --template-file azure-template.json \
+    --parameters vmName=tvm adminUsername=victoronto adminPassword=victoronto
+Inner Errors: 
+{"code": "SkuNotAvailable", "message": "The requested VM size for resource 'Following SKUs have failed for Capacity Restrictions: Standard_B1s' is currently not available in location 'eastus'. Please try another size or deploy to a different location or different zone. See https://aka.ms/azureskunotavailable for details."}
+
+
+$ az vm list-skus --location eastus --size Standard_B1s --output table
+ResourceType     Locations    Name          Zones    Restrictions
+---------------  -----------  ------------  -------  ----------------------------------------------------------------------
+virtualMachines  eastus       Standard_B1s  1,2,3    NotAvailableForSubscription, type: Zone, locations: eastus, zones: 2,1
+```
