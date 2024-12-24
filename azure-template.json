@@ -83,7 +83,7 @@
         ],
         "properties": {
           "hardwareProfile": {
-            "vmSize": "Standard_B1s"
+            "vmSize": "Standard_B2ms"
           },
           "osProfile": {
             "computerName": "[parameters('vmName')]",
@@ -111,11 +111,7 @@
                 "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
               }
             ]
-          },
-          "billingProfile": {
-            "maxPrice": -1
-          },
-          "priority": "Spot"
+          }
         }
       },
       {
@@ -129,7 +125,7 @@
           "typeHandlerVersion": "2.1",
           "settings": {
             "fileUris": [
-              "https://gist.githubusercontent.com/victoronto/741d17398a0b29026f9bf5b202e1562e/raw/07f40e3392ab0175a63b400f80aae50f7f56893e/stable-diffusion-webui-install.sh"
+              "https://gist.githubusercontent.com/decmaxn/62bf47614c740a0e21ee53096399078c/raw/52f0e76602d26f4fc2dc1d9f9a346ac5e3fe103e/stable-diffusion-webui-install.sh"
             ],
             "commandToExecute": "[concat('bash stable-diffusion-webui-install.sh ', parameters('adminUsername'))]"
           }

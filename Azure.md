@@ -89,10 +89,18 @@ inner errors for details.","details":[{"code":"SkuNotAvailable","message":"The r
 So the problem is the spot request. The error message is not so clear.
 
 
-Manually run this https://github.com/theonemule/stable-diffusion-webui-azure/blob/main/install.sh line by line
+Manually run this https://github.com/theonemule/stable-diffusion-webui-azure/blob/main/install.sh line by line,then made it available for public.
 ```bash
-$ wget https://gist.githubusercontent.com/victoronto/741d17398a0b29026f9bf5b202e1562e/raw/07f40e3392ab0175a63b400f80aae50f7f56893e/stable-diffusion-webui-install.sh
+$ gh gist create stable-diffusion-webui-install.sh  -d "Install stable diffusion webui on Azure VM"
+- Creating gist stable-diffusion-webui-install.sh
+✓ Created secret gist stable-diffusion-webui-install.sh
+https://gist.github.com/decmaxn/62bf47614c740a0e21ee53096399078c
+# Open browser to get it's raw format URL and update the ARM template
+$ gh gist view https://gist.github.com/decmaxn/62bf47614c740a0e21ee53096399078c  -w 
 ```
-Adding export DEBIAN_FRONTEND=noninteractive, then made it available for public as shown above.
+Adding export DEBIAN_FRONTEND=noninteractive, also sleep 60 to let Azure CustomScriptExtension to be completed.
+```bash
+$ gh gist edit https://gist.github.com/decmaxn/62bf47614c740a0e21ee53096399078c  -f stable-diffusion-webui-install.sh 
+```
 
 Now I am ready to test the ARM template again, to clean up first, do ```az group delete --name trg --yes```

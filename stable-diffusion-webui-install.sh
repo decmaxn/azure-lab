@@ -7,7 +7,7 @@ ACTIVEUSER=$1
 export DEBIAN_FRONTEND=noninteractive
 apt update
 apt upgrade -y
-apt install -y ubuntu-drivers-common wget
+apt install -y ubuntu-drivers-common wget bashtop net-tools
 ubuntu-drivers install
 
 # Install CUDA
@@ -23,7 +23,8 @@ chown $ACTIVEUSER:$ACTIVEUSER stable-diffusion-webui
 su -c "git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git" $ACTIVEUSER
 
 # Create a virtual environment and install requirements
-su -c "python3 -m venv /stable-diffusion-webui/venv && source /stable-diffusion-webui/venv/bin/activate && pip install -r /stable-diffusion-webui/requirements.txt" $ACTIVEUSER
+# su -c "python3 -m venv /stable-diffusion-webui/venv && source /stable-diffusion-webui/venv/bin/activate && pip install -r /stable-diffusion-webui/requirements.txt" $ACTIVEUSER
+# Commented out the above line because it is not working as expected and taking too long to troubleshoot
 
 # Create the systemd service file
 cat <<EOF > /etc/systemd/system/stable-diffusion-webui.service
@@ -43,8 +44,9 @@ Environment="PATH=/usr/bin:/usr/local/bin:/stable-diffusion-webui/venv/bin"
 WantedBy=multi-user.target
 EOF
 
-# Reload systemd daemon and enable the service
-systemctl daemon-reload
-systemctl enable stable-diffusion-webui.service
+# Reload systemd daemon and enable the service, will manually do them after reboot
+# systemctl daemon-reload
+# systemctl enable stable-diffusion-webui.service
 
-reboot
+# reboot after 1 minute to allow CustomScriptExtension to be completed
+shutdown -r +1 "System will reboot after 1 minute to allow CustomScriptExtension to be completed"
