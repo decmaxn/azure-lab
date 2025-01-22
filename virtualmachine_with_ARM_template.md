@@ -1,7 +1,7 @@
 
 VM commands
 ```bash
-$ az deployment group create \
+az deployment group create \
     --resource-group trg \
     --template-file azure-template.json \
     --parameters vmName=tvm adminUsername=victoronto adminPassword=Victoront012
@@ -9,14 +9,14 @@ Inner Errors:
 {"code": "SkuNotAvailable", "message": "The requested VM size for resource 'Following SKUs have failed for Capacity Restrictions: Standard_B1s' is currently not available in location 'eastus'. Please try another size or deploy to a different location or different zone. See https://aka.ms/azureskunotavailable for details."}
 
 
-$ az vm list-skus --location eastus --size Standard_B1s --output table
+az vm list-skus --location eastus --size Standard_B1s --output table
 ResourceType     Locations    Name          Zones    Restrictions
 ---------------  -----------  ------------  -------  ----------------------------------------------------------------------
 virtualMachines  eastus       Standard_B1s  1,2,3    NotAvailableForSubscription, type: Zone, locations: eastus, zones: 2,1
 ```
 Comfirm the deployment is successful.
 ```bash
-$ az deployment group show --resource-group trg --name azure-template
+az deployment group show --resource-group trg --name azure-template
 ```
 What is wrong with the VM creation?
 ```bash
@@ -24,10 +24,10 @@ az vm create \
     --resource-group trg \
     --name tvm \
     --image Ubuntu2404 \
-    --size Standard_B1s \
+    --size Standard_D2s_v3 \
     --admin-username victoronto \
     --admin-password Victoront012 \
-    --zone 3 
+    --zone 2
 {
   "fqdns": "",
   "id": "/subscriptions/d1df09aa-4d86-4495-88f0-eaff2c7106c1/resourceGroups/trg/providers/Microsoft.Compute/virtualMachines/tvm",
@@ -55,7 +55,7 @@ az vm create \
     --resource-group trg \
     --name tvm \
     --image Ubuntu2404 \
-    --size Standard_B1s \
+    --size Standard_NV4as_v4 \
     --admin-username victoronto \
     --admin-password Victoront012 \
     --priority Spot \
@@ -67,16 +67,16 @@ So the problem is the spot request. The error message is not so clear.
 
 Manually run this https://github.com/theonemule/stable-diffusion-webui-azure/blob/main/install.sh line by line,then made it available for public.
 ```bash
-$ gh gist create stable-diffusion-webui-install.sh  -d "Install stable diffusion webui on Azure VM"
+gh gist create stable-diffusion-webui-install.sh  -d "Install stable diffusion webui on Azure VM"
 - Creating gist stable-diffusion-webui-install.sh
 ✓ Created secret gist stable-diffusion-webui-install.sh
 https://gist.github.com/decmaxn/62bf47614c740a0e21ee53096399078c
 # Open browser to get it's raw format URL and update the ARM template
-$ gh gist view https://gist.github.com/decmaxn/62bf47614c740a0e21ee53096399078c  -w 
+gh gist view https://gist.github.com/decmaxn/62bf47614c740a0e21ee53096399078c  -w 
 ```
 Adding export DEBIAN_FRONTEND=noninteractive, also sleep 60 to let Azure CustomScriptExtension to be completed.
 ```bash
-$ gh gist edit https://gist.github.com/decmaxn/62bf47614c740a0e21ee53096399078c  -f stable-diffusion-webui-install.sh 
+gh gist edit https://gist.github.com/decmaxn/62bf47614c740a0e21ee53096399078c  -f stable-diffusion-webui-install.sh 
 ```
 
 Now I am ready to test the ARM template again, to clean up first, do ```az group delete --name trg --yes```
