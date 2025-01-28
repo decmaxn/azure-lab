@@ -29,7 +29,7 @@
       }
     },
     "variables": {
-      "vmSize": "Standard_NV4as_v4",
+      "vmSize": "Standard_NV8as_v4",
       "storageAccountName": "[concat(uniqueString(resourceGroup().id), 'storage')]",
       "nicName": "[concat(parameters('vmName'), '-nic')]",
       "publicIPAddressName": "[concat(parameters('vmName'), '-ip')]",
@@ -43,7 +43,10 @@
         "name": "[variables('publicIPAddressName')]",
         "location": "[parameters('location')]",
         "properties": {
-          "publicIPAllocationMethod": "Dynamic"
+          "publicIPAllocationMethod": "Dynamic",
+          "dnsSettings": {
+            "domainNameLabel": "[parameters('vmName')]"
+          }
         }
       },
       {
@@ -187,6 +190,10 @@
       "adminUsername": {
         "type": "string",
         "value": "[parameters('adminUsername')]"
+      },
+      "dnsName": {
+        "type": "string",
+        "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).dnsSettings.fqdn]"
       }
     }
   }
