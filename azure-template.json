@@ -122,6 +122,23 @@
         }
       },
       {
+        "name": "[concat(parameters('vmName'), '/GpuDriver')]",
+        "type": "Microsoft.Compute/virtualMachines/extensions",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2015-06-15",
+        "dependsOn": [
+          "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+        ],
+        "properties": {
+          "publisher": "Microsoft.HpcCompute",
+          "type": "AmdGpuDriverWindows",
+          "typeHandlerVersion": "1.1",
+          "autoUpgradeMinorVersion": true,
+          "settings": {
+          }
+        }
+      },
+      {
         "type": "Microsoft.Network/networkSecurityGroups",
         "apiVersion": "2020-11-01",
         "name": "[concat(parameters('vmName'), '-nsg')]",
