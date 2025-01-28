@@ -29,10 +29,12 @@
       }
     },
     "variables": {
+      "vmSize": "Standard_NV4as_v4",
       "storageAccountName": "[concat(uniqueString(resourceGroup().id), 'storage')]",
       "nicName": "[concat(parameters('vmName'), '-nic')]",
       "publicIPAddressName": "[concat(parameters('vmName'), '-ip')]",
-      "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'myVnet', 'default')]"
+      "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'myVnet', 'default')]",
+      "osDiskName": "osdisk"
     },
     "resources": [
       {
@@ -75,7 +77,7 @@
       },
       {
         "type": "Microsoft.Compute/virtualMachines",
-        "apiVersion": "2021-03-01",
+        "apiVersion": "2021-11-01",
         "name": "[parameters('vmName')]",
         "location": "[parameters('location')]",
         "dependsOn": [
@@ -83,26 +85,31 @@
         ],
         "properties": {
           "hardwareProfile": {
-            "vmSize": "Standard_NV4as_v4"
+            "vmSize": "[variables('vmSize')]"
           },
           "osProfile": {
             "computerName": "[parameters('vmName')]",
             "adminUsername": "[parameters('adminUsername')]",
             "adminPassword": "[parameters('adminPassword')]",
-            "linuxConfiguration": {
-              "disablePasswordAuthentication": false
+            "windowsConfiguration": {
+              "provisionVMAgent": true,
+              "enableAutomaticUpdates": true
             }
           },
           "storageProfile": {
             "imageReference": {
-              "publisher": "Canonical",
-              "offer": "0001-com-ubuntu-server-jammy",
-              "sku": "22_04-lts-gen2",
+              "publisher": "MicrosoftWindowsServer",
+              "offer": "WindowsServer",
+              "sku": "2019-Datacenter",
               "version": "latest"
             },
             "osDisk": {
+              "name": "[variables('osDiskName')]",
+              "caching": "ReadWrite",
               "createOption": "FromImage",
-              "diskSizeGB": 128
+              "managedDisk": {
+                "storageAccountType": "StandardSSD_LRS"
+              }
             }
           },
           "networkProfile": {
@@ -115,26 +122,6 @@
         }
       },
       {
-        "type": "Microsoft.Compute/virtualMachines/extensions",
-        "apiVersion": "2021-03-01",
-        "name": "[concat(parameters('vmName'), '/CustomScriptExtension')]",
-        "location": "[parameters('location')]",
-        "properties": {
-          "publisher": "Microsoft.Azure.Extensions",
-          "type": "CustomScript",
-          "typeHandlerVersion": "2.1",
-          "settings": {
-            "fileUris": [
-              "https://gist.githubusercontent.com/decmaxn/62bf47614c740a0e21ee53096399078c/raw/52f0e76602d26f4fc2dc1d9f9a346ac5e3fe103e/stable-diffusion-webui-install.sh"
-            ],
-            "commandToExecute": "[concat('bash stable-diffusion-webui-install.sh ', parameters('adminUsername'))]"
-          }
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
-        ]
-      },
-      {
         "type": "Microsoft.Network/networkSecurityGroups",
         "apiVersion": "2020-11-01",
         "name": "[concat(parameters('vmName'), '-nsg')]",
@@ -142,7 +129,7 @@
         "properties": {
           "securityRules": [
             {
-              "name": "AllowSSH",
+              "name": "Allow-RDP",
               "properties": {
                 "priority": 1000,
                 "protocol": "Tcp",
@@ -151,7 +138,7 @@
                 "sourceAddressPrefix": "*",
                 "sourcePortRange": "*",
                 "destinationAddressPrefix": "*",
-                "destinationPortRange": "22"
+                "destinationPortRange": "3389"
               }
             }
           ]
@@ -178,5 +165,11 @@
           ]
         }
       }
-    ]
+    ],
+    "outputs": {
+      "adminUsername": {
+        "type": "string",
+        "value": "[parameters('adminUsername')]"
+      }
+    }
   }
