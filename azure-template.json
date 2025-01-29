@@ -29,7 +29,7 @@
       }
     },
     "variables": {
-      "vmSize": "Standard_NV8as_v4",
+      "vmSize": "Standard_B1s",
       "storageAccountName": "[concat(uniqueString(resourceGroup().id), 'storage')]",
       "nicName": "[concat(parameters('vmName'), '-nic')]",
       "publicIPAddressName": "[concat(parameters('vmName'), '-ip')]",
@@ -96,14 +96,21 @@
             "adminPassword": "[parameters('adminPassword')]",
             "windowsConfiguration": {
               "provisionVMAgent": true,
-              "enableAutomaticUpdates": true
-            }
+              "enableAutomaticUpdates": true,
+              "patchSettings": {
+                  "patchMode": "AutomaticByPlatform",
+                  "assessmentMode": "ImageDefault",
+                  "enableHotpatching": false
+              }
+          },
+          "secrets": [],
+          "allowExtensionOperations": true
           },
           "storageProfile": {
             "imageReference": {
               "publisher": "MicrosoftWindowsServer",
               "offer": "WindowsServer",
-              "sku": "2019-Datacenter",
+              "sku": "2022-datacenter-azure-edition-core-smalldisk",
               "version": "latest"
             },
             "osDisk": {
@@ -111,8 +118,10 @@
               "caching": "ReadWrite",
               "createOption": "FromImage",
               "managedDisk": {
-                "storageAccountType": "StandardSSD_LRS"
-              }
+                "storageAccountType": "Premium_LRS"
+              },
+              "deleteOption": "Delete",
+              "diskSizeGB": 64
             }
           },
           "networkProfile": {
@@ -121,23 +130,6 @@
                 "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
               }
             ]
-          }
-        }
-      },
-      {
-        "name": "[concat(parameters('vmName'), '/GpuDriver')]",
-        "type": "Microsoft.Compute/virtualMachines/extensions",
-        "location": "[resourceGroup().location]",
-        "apiVersion": "2015-06-15",
-        "dependsOn": [
-          "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
-        ],
-        "properties": {
-          "publisher": "Microsoft.HpcCompute",
-          "type": "AmdGpuDriverWindows",
-          "typeHandlerVersion": "1.1",
-          "autoUpgradeMinorVersion": true,
-          "settings": {
           }
         }
       },
