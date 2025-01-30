@@ -57,3 +57,7 @@ After remoted in using RDS, I saw the Windows core edition interface. It's nice 
 Exit to command line (PowerShell), and run taskmgr, there are your resources. 
 
 Let's have some fun, I installed Choco and Google chrome, then ```start chrome```! It is slow, but hey, it's free. 
+
+# Free linux
+ Using [free for 12 monthes service](https://portal.azure.com/#view/Microsoft_Azure_Billing/FreeServicesBlade), I created a free Linux vm. 
+Catpture the changes (not all necessary) and modified my ARM template - azure-linux-template.json. 
