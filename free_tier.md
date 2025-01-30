@@ -61,3 +61,11 @@ Let's have some fun, I installed Choco and Google chrome, then ```start chrome``
 # Free linux
  Using [free for 12 monthes service](https://portal.azure.com/#view/Microsoft_Azure_Billing/FreeServicesBlade), I created a free Linux vm. 
 Catpture the changes (not all necessary) and modified my ARM template - azure-linux-template.json. 
+```bash
+az group create --name prg --location eastus
+az deployment group create \
+    --resource-group prg \
+    --template-file azure-linux-template.json \
+    --parameters vmName=tvm adminUsername=vma
+az group delete --name prg --yes
+```
