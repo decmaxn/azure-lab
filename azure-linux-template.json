@@ -14,6 +14,12 @@
           "description": "Username for the VM."
         }
       },
+      "sshPublicKey": {
+        "type": "string",
+        "metadata": {
+          "description": "Public key for the adminUsername."
+        }
+      },
       "location": {
         "type": "string",
         "defaultValue": "[resourceGroup().location]",
@@ -92,8 +98,8 @@
               "ssh": {
                   "publicKeys": [
                       {
-                          "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-                          "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCR0r3l06itgzVIE/FM4kLCbmdG802qZauqOx+rWKVDyB5uNwzcxp9UuOK/LkWJTuENGeMcdKbu1VT2u4ndEq0JldiRF2SMBNlDhz3srZTHdch/bbW5hQCpfJ/VHC4CjdyiUXfIpQxktISVEyNdaPfOr8NuPomu37JbA8Nm6sEpYJWllYl1019uPCB9yfXzP9P4CTHjICJc/c4SWJeDIUwDptIfZhPYwwFjnwcfEGUOplhBbNBLgMXcSRqEL4VFS/t1R/SO3FgAbliYcvd3TrDo5rq3D9T+/bRSTsDwc2go906WNCTfBM1Cb4xCkwpOV4L5Id5B4lh8hm4X1WXl/Qr"
+                        "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                        "keyData": "[parameters('sshPublicKey')]"
                       }
                   ]
               },

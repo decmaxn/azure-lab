@@ -61,11 +61,32 @@ Let's have some fun, I installed Choco and Google chrome, then ```start chrome``
 # Free linux
  Using [free for 12 monthes service](https://portal.azure.com/#view/Microsoft_Azure_Billing/FreeServicesBlade), I created a free Linux vm. 
 Catpture the changes (not all necessary) and modified my ARM template - azure-linux-template.json. 
+
+Replace id_rsa.pub with your public key file, which you have a private key and will use it to login to this VM. Of course replace vma with your user name, and vmName is you prefer to.
+
 ```bash
 az group create --name prg --location eastus
+
+export sshKey=$(cat ~/.ssh/id_rsa.pub)
+
+cat <<EOF > parameters.json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": { "value": "tvm" },
+    "adminUsername": { "value": "vma" },
+    "sshPublicKey": { "value": "$sshKey" }
+  }
+}
+EOF
+
 az deployment group create \
     --resource-group prg \
     --template-file azure-linux-template.json \
-    --parameters vmName=tvm adminUsername=vma
+    --parameters @parameters.json
+
+ssh -i ~/.ssh/id_rsa vma@tvm.eastus.cloudapp.azure.com
+
 az group delete --name prg --yes
 ```
