@@ -28,7 +28,7 @@ cat <<EOF > parameters.json
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "vmName": { "value": "tvm" },
+    "vmName": { "value": "twvm" },
     "adminUsername": { "value": "vma" },
     "adminPassword": { "value": "$PW" }
   }
@@ -89,7 +89,7 @@ cat <<EOF > parameters.json
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "vmName": { "value": "tvm" },
+    "vmName": { "value": "tlvm" },
     "adminUsername": { "value": "vma" },
     "sshPublicKey": { "value": "$sshKey" }
   }
@@ -105,3 +105,10 @@ ssh -i ~/.ssh/id_rsa vma@tvm.eastus.cloudapp.azure.com
 
 az group delete --name prg --yes
 ```
+
+# Two VMS at the same time
+Try to bring up 2 VMS at the same and expereienced conflict of names, etc. vmName, osDiskName. Modify the names and it works. 
+
+One thing to be noticed is the myVnet resource are to be created in both ARM tempaltes, but there is no conflict. 
+1. Not they can be created with the same name, but the later deployment will ignore this resource and use the existing one. 
+1. Each VMs will get their own private IP and they can communicate with each other

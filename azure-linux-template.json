@@ -33,8 +33,7 @@
       "storageAccountName": "[concat(uniqueString(resourceGroup().id), 'storage')]",
       "nicName": "[concat(parameters('vmName'), '-nic')]",
       "publicIPAddressName": "[concat(parameters('vmName'), '-ip')]",
-      "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'myVnet', 'default')]",
-      "osDiskName": "osdisk"
+      "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'myVnet', 'default')]"
     },
     "resources": [
       {
@@ -121,7 +120,7 @@
             },
             "osDisk": {
               "osType": "Linux",
-              "name": "[variables('osDiskName')]",
+              "name": "[concat(parameters('vmName'), '-osDisk')]",
               "caching": "ReadWrite",
               "createOption": "FromImage",
               "managedDisk": {
