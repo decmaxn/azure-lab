@@ -21,10 +21,25 @@ Using [free for 12 monthes service](https://portal.azure.com/#view/Microsoft_Azu
 Catpture the changes (not all necessary) and modified my ARM template - azure-template.json. 
 ```bash
 az group create --name prg --location eastus
+
+export PW=MyComplex123.password
+cat <<EOF > parameters.json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": { "value": "tvm" },
+    "adminUsername": { "value": "vma" },
+    "adminPassword": { "value": "$PW" }
+  }
+}
+EOF
+
 az deployment group create \
     --resource-group prg \
-    --template-file azure-template.json \
-    --parameters vmName=tvm adminUsername=victoronto adminPassword=Victoront012
+    --template-file azure-windows-template.json \
+    --parameters @parameters.json
+
 az group delete --name prg --yes
 ```
 After remoted in using RDS, I saw the Windows core edition interface. It's nice to see Microsoft is pushing their core edition :-). 
