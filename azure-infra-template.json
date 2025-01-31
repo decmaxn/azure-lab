@@ -183,6 +183,17 @@
           ]
       },
       {
+        "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+        "apiVersion": "2023-05-01",
+        "name": "[concat(parameters('storageAccountName'), '/default/', 'defaultctnr')]",
+        "dependsOn": [
+            "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+        ],
+        "properties": {
+            "publicAccess": "None"
+        }
+      },
+      {
         "name": "[concat(parameters('storageAccountName'), '/default')]",
         "type": "Microsoft.Storage/storageAccounts/fileservices",
         "apiVersion": "2023-05-01",
