@@ -33,7 +33,7 @@
       "storageAccountName": "[concat(uniqueString(resourceGroup().id), 'storage')]",
       "nicName": "[concat(parameters('vmName'), '-nic')]",
       "publicIPAddressName": "[concat(parameters('vmName'), '-ip')]",
-      "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'myVnet', 'default')]"
+      "subnetRef": "[resourceId('infra-rg', 'Microsoft.Network/virtualNetworks/subnets', 'myVnet', 'default')]"
     },
     "resources": [
       {
@@ -55,7 +55,6 @@
         "location": "[parameters('location')]",
         "dependsOn": [
           "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName'), '-nsg'))]",
-          "[resourceId('Microsoft.Network/virtualNetworks', 'myVnet')]",
           "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
         ],
         "properties": {
@@ -157,27 +156,6 @@
                 "sourcePortRange": "*",
                 "destinationAddressPrefix": "*",
                 "destinationPortRange": "22"
-              }
-            }
-          ]
-        }
-      },
-      {
-        "type": "Microsoft.Network/virtualNetworks",
-        "apiVersion": "2020-11-01",
-        "name": "myVnet",
-        "location": "[parameters('location')]",
-        "properties": {
-          "addressSpace": {
-            "addressPrefixes": [
-              "10.0.0.0/16"
-            ]
-          },
-          "subnets": [
-            {
-              "name": "default",
-              "properties": {
-                "addressPrefix": "10.0.0.0/24"
               }
             }
           ]
