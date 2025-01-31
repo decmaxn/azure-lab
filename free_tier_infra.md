@@ -14,3 +14,14 @@ az deployment group create \
 # Don't need to clean it up, it suppose to be there all the time without been charged
 az group delete --name infra-rg --yes
 ```
+## Create a Key Vault
+Teh above azure-infra-template.json creates network and a storage account, a file share. Technically I should put the Key Valut there too, but it's easier to create it separately. 
+
+Because I got the template from portal by trying to create a Key Vault following [free for 12 monthes service](https://portal.azure.com/#view/Microsoft_Azure_Billing/FreeServicesBlade).
+
+```bash
+az deployment group create \
+    --resource-group infra-rg \
+    --template-file azure-infra-vault-template.json \
+    --parameters @infra-vault-parameters.json
+```
