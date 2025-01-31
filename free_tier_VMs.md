@@ -101,7 +101,7 @@ az deployment group create \
     --template-file azure-linux-template.json \
     --parameters @parameters.json
 
-ssh -i ~/.ssh/id_rsa vma@tvm.eastus.cloudapp.azure.com
+ssh -i ~/.ssh/id_rsa vma@tlvm.eastus.cloudapp.azure.com
 
 az group delete --name prg --yes
 ```
@@ -112,3 +112,33 @@ Try to bring up 2 VMS at the same and expereienced conflict of names, etc. vmNam
 One thing to be noticed is the myVnet resource are to be created in both ARM tempaltes, but there is no conflict. 
 1. Not they can be created with the same name, but the later deployment will ignore this resource and use the existing one. 
 1. Each VMs will get their own private IP and they can communicate with each other
+
+## Connect to the file share
+There is a free tier of Azure file share, which is 100GB of LRS transaction optimized,k hot, and cool files. 2 million read, list, and other file operations. 
+It's been created in the infra resource group, let's connect to it. Get the following script from the portal, by trying to connect the share.
+```bash
+sudo mkdir /mnt/defaultshare
+if [ ! -d "/etc/smbcredentials" ]; then
+sudo mkdir /etc/smbcredentials
+fi
+if [ ! -f "/etc/smbcredentials/infratsact.cred" ]; then
+    sudo bash -c 'echo "username=infratsact" >> /etc/smbcredentials/infratsact.cred'
+    sudo bash -c 'echo "password=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" >> /etc/smbcredentials/infratsact.cred'
+fi
+sudo chmod 600 /etc/smbcredentials/infratsact.cred
+
+sudo bash -c 'echo "//infratsact.file.core.windows.net/defaultshare /mnt/defaultshare cifs nofail,credentials=/etc/smbcredentials/infratsact.cred,dir_mode=0777,file_mode=0777,serverino,nosharesock,actimeo=30" >> /etc/fstab'
+sudo mount -t cifs //infratsact.file.core.windows.net/defaultshare /mnt/defaultshare -o credentials=/etc/smbcredentials/infratsact.cred,dir_mode=0777,file_mode=0777,serverino,nosharesock,actimeo=30
+```
+```powershell
+$connectTestResult = Test-NetConnection -ComputerName infratsact.file.core.windows.net -Port 445
+if ($connectTestResult.TcpTestSucceeded) {
+    # Save the password so the drive will persist on reboot
+    cmd.exe /C "cmdkey /add:`"infratsact.file.core.windows.net`" /user:`"localhost\infratsact`" /pass:`"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`""
+    # Mount the drive
+    New-PSDrive -Name Z -PSProvider FileSystem -Root "\\infratsact.file.core.windows.net\defaultshare" -Persist
+} else {
+    Write-Error -Message "Unable to reach the Azure storage account via port 445. Check to make sure your organization or ISP is not blocking port 445, or use Azure P2S VPN, Azure S2S VPN, or Express Route to tunnel SMB traffic over a different port."
+}
+```
+After both VMs are attached to this file share, I created a file in one VM, and it's visible in the other VM.
