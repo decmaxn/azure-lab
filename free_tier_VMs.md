@@ -22,7 +22,17 @@ Catpture the changes (not all necessary) and modified my ARM template - azure-te
 ```bash
 az group create --name prg --location eastus
 
-export PW=MyComplex123.password
+# Create a Key Vault
+az keyvault create --name myKeyVault --resource-group prg --location eastus
+
+# Set the Key Vault name
+keyVaultName=myKeyVault
+
+# Store the password in Azure Key Vault and retrieve it securely
+az keyvault secret set --vault-name <YourKeyVaultName> --name MyPassword --value MyComplex123.password
+
+# Retrieve the password from Azure Key Vault
+export PW=$(az keyvault secret show --vault-name <YourKeyVaultName> --name MyPassword --query value -o tsv)
 cat <<EOF > parameters.json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
