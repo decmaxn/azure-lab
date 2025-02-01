@@ -22,24 +22,7 @@ Catpture the changes (not all necessary) and modified my ARM template - azure-te
 ```bash
 az group create --name prg --location eastus
 SubID=$(az account show --query id --output tsv)
-cat <<EOF > parameters.json
-{
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "vmName": { "value": "twvm" },
-    "adminUsername": { "value": "vma" },
-    "adminPassword": {
-      "reference": {
-        "keyVault": {
-          "id": "/subscriptions/$SubID/resourceGroups/infra-rg/providers/Microsoft.KeyVault/vaults/infratkvault"
-        },
-        "secretName": "adminUserPassword"
-      }
-    }
-  }
-}
-EOF
+sed s/\$SubID/$SubID/g azure-linux-parameters.json  > parameters.json 
 
 az deployment group create \
     --resource-group prg \
@@ -89,25 +72,7 @@ Replace id_rsa.pub with your public key file, which you have a private key and w
 az group create --name prg --location eastus
 
 SubID=$(az account show --query id --output tsv)
-
-cat <<EOF > parameters.json
-{
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "vmName": { "value": "tlvm" },
-    "adminUsername": { "value": "vma" },
-    "sshPublicKey": {
-      "reference": {
-        "keyVault": {
-          "id": "/subscriptions/$SubID/resourceGroups/infra-rg/providers/Microsoft.KeyVault/vaults/infratkvault"
-        },
-        "secretName": "admin-ssh-key-public"
-      }
-    }
-  }
-}
-EOF
+sed s/\$SubID/$SubID/g azure-windows-parameters.json  > parameters.json 
 
 az deployment group create \
     --resource-group prg \
