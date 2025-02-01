@@ -21,8 +21,7 @@ Using [free for 12 monthes service](https://portal.azure.com/#view/Microsoft_Azu
 Catpture the changes (not all necessary) and modified my ARM template - azure-template.json. 
 ```bash
 az group create --name prg --location eastus
-
-export PW=MyComplex123.password
+SubID=$(az account show --query id --output tsv)
 cat <<EOF > parameters.json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
@@ -30,7 +29,14 @@ cat <<EOF > parameters.json
   "parameters": {
     "vmName": { "value": "twvm" },
     "adminUsername": { "value": "vma" },
-    "adminPassword": { "value": "$PW" }
+    "adminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/$SubID/resourceGroups/infra-rg/providers/Microsoft.KeyVault/vaults/infratkvault"
+        },
+        "secretName": "adminUserPassword"
+      }
+    }
   }
 }
 EOF
@@ -82,7 +88,7 @@ Replace id_rsa.pub with your public key file, which you have a private key and w
 ```bash
 az group create --name prg --location eastus
 
-export sshKey=$(cat ~/.ssh/id_rsa.pub)
+SubID=$(az account show --query id --output tsv)
 
 cat <<EOF > parameters.json
 {
@@ -91,7 +97,14 @@ cat <<EOF > parameters.json
   "parameters": {
     "vmName": { "value": "tlvm" },
     "adminUsername": { "value": "vma" },
-    "sshPublicKey": { "value": "$sshKey" }
+    "sshPublicKey": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/$SubID/resourceGroups/infra-rg/providers/Microsoft.KeyVault/vaults/infratkvault"
+        },
+        "secretName": "admin-ssh-key-public"
+      }
+    }
   }
 }
 EOF
