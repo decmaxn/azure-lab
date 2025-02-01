@@ -17,6 +17,12 @@ az storage account create --name $StorageAccountToBeCreated \
 ```
 Give myself permission to create container and upload blob. It will take a few minutes to sync, you won't be able to do staff before that.
 ```bash
+userPrincipalName=$(az ad signed-in-user show --query id -o tsv)
+scope="/subscriptions/$SubID/resourceGroups/trg"
+az role assignment create --role "Storage Blob Data Contributor" --assignee $userPrincipalName --scope $scope
+```
+or just run this commands pipe together instead of above 3 commands for the same effect.
+```bash
 az ad signed-in-user show --query id -o tsv | az role assignment create \
     --role "Storage Blob Data Contributor" \
     --assignee @- \
