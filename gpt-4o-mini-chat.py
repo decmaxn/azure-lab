@@ -2,6 +2,9 @@
 import os  
 import base64
 from openai import AzureOpenAI  
+from dotenv import load_dotenv
+
+load_dotenv()
 
 endpoint = os.getenv("ENDPOINT_URL", "https://taihub3485729352.openai.azure.com/")  
 deployment = os.getenv("DEPLOYMENT_NAME", "gpt-4o-mini")  
@@ -63,7 +66,7 @@ completion = client.chat.completions.create(
     presence_penalty=0,
     stop=None,  
     stream=False
-)
+).choices[0].message.content
 
-print(completion.to_json())  
+print(completion)  
     

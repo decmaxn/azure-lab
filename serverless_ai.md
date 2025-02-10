@@ -22,3 +22,10 @@ After creating the same stack in other regions and the tests still failed, I cre
 python gpt-4o-mini-chat.py
 ```
 The problems are due to the default "copy code" button on portal doesn't give accurate script for now. Modifeed the gpt-4o-mini-chat.py fixed the problems.
+
+Improve the script by taking the API key from environment variable, and print the response in a more readable format.
+```bash
+cp example.env .env  # Then update the .env file with the API key manually 
+pip install -r requirements.txt 
+python gpt-4o-mini-chat.py
+```
