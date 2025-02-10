@@ -17,3 +17,9 @@ $ python deepseekr1-chat.py
 ... ...
 openai.InternalServerError: Error code: 500 - {'error': {'code': 'InternalServerError', 'message': 'Backend returned unexpected response. Please contact Microsoft for help.'}}
 ```
+After creating the same stack in other regions and the tests still failed, I created gpt-4o-mini model manually. This time there are different errors.
+```bash
+python gpt-4o-mini-chat.py
+```
+
+
