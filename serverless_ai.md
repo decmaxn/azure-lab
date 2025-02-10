@@ -29,3 +29,19 @@ cp example.env .env  # Then update the .env file with the API key manually
 pip install -r requirements.txt 
 python gpt-4o-mini-chat.py
 ```
+
+## Test using the API with Azure AI model inference
+There are 3 types of end points for the project. "Azure AI inference" is the one we need to use with azure.ai.inference libraries, as in azure--inference-chat.py.
+
+An other one is for "Azure OpenAI Service", use it with AzureOpenAI library, as in gpt-4o-mini-chat.py.
+
+Using wrong endpoint will result in error like this:
+```bash
+azure.core.exceptions.ResourceNotFoundError: (404) Resource not found
+```
+
+And "Azure AI Services" endpoint to call Computer Vision, Content Safety, Document Intelligence, Language, Translation, and Token services. There are also 2 Speech service's endpoints, one for Speech to Text and the other for Text to Speech.
+
+There is another endpoint for the specific model, it's longer including api version, and maybe deployment name.
+
+But no matter which endpoints, They all share the same API key. 
