@@ -1,0 +1,337 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the deployment."
+            }
+        },
+        "nameFriendly": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the friendly name of the deployment."
+            }
+        },
+        "environment": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the name of the environment."
+            }
+        },
+        "kind": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the workspace kind"
+            }
+        },
+        "publicNetworkAccess": {
+            "defaultValue": "Enabled",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies whether the workspace can be accessed by public networks or not."
+            }
+        },
+        "isolationMode": {
+            "allowedValues": [
+                "Disabled",
+                "AllowOnlyApprovedOutbound",
+                "AllowInternetOutbound"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the managedVnet IsolationMode"
+            }
+        },
+        "storageAccountName": {
+            "type": "String"
+        },
+        "storageOption": {
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "none"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Determines whether or not a new storage account should be provisioned."
+            }
+        },
+        "lazyInitSystemDatastores": {
+            "defaultValue": false,
+            "type": "Bool"
+        },
+        "keyVaultOption": {
+            "defaultValue": "new",
+            "allowedValues": [
+                "new",
+                "none",
+                "existing"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Determines whether or not a new key vault should be provisioned."
+            }
+        },
+        "keyVaultName": {
+            "type": "String"
+        },
+        "containerRegistryOption": {
+            "defaultValue": "none",
+            "allowedValues": [
+                "new",
+                "existing",
+                "none"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Determines whether or not a new container registry should be provisioned."
+            }
+        },
+        "containerRegistryName": {
+            "type": "String"
+        },
+        "projectResourceGroup": {
+            "type": "String"
+        },
+        "location": {
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the location of the Azure Machine Learning workspace and dependent resources."
+            }
+        },
+        "endpointKind": {
+            "allowedValues": [
+                "OpenAI",
+                "All"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Indicates whether or not the resourceId is OpenAI or All."
+            }
+        },
+        "aoaiName": {
+            "type": "String"
+        },
+        "endpointOption": {
+            "defaultValue": "create",
+            "allowedValues": [
+                "create",
+                "none"
+            ],
+            "type": "String"
+        },
+        "aoaiOption": {
+            "defaultValue": "none",
+            "allowedValues": [
+                "new",
+                "none"
+            ],
+            "type": "String"
+        },
+        "aoaiKind": {
+            "allowedValues": [
+                "AIServices",
+                "OpenAI"
+            ],
+            "type": "String"
+        },
+        "searchName": {
+            "type": "String"
+        },
+        "searchOption": {
+            "defaultValue": "none",
+            "allowedValues": [
+                "new",
+                "none"
+            ],
+            "type": "String"
+        },
+        "endpointResourceId": {
+            "defaultValue": "null",
+            "type": "String"
+        },
+        "tags": {
+            "defaultValue": {},
+            "type": "Object"
+        }
+    },
+    "variables": {
+        "tenantId": "[subscription().tenantId]",
+        "storageAccountName": "[parameters('storageAccountName')]",
+        "keyVaultName": "[parameters('keyVaultName')]",
+        "containerRegistryName": "[parameters('containerRegistryName')]",
+        "aoaiName": "[parameters('aoaiName')]",
+        "workspaceName": "[parameters('name')]",
+        "workspaceNameFriendly": "[parameters('nameFriendly')]",
+        "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "keyVaultId": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+        "containerRegistryId": "[resourceId('Microsoft.ContainerRegistry/registries', variables('containerRegistryName'))]",
+        "aoaiId": "[resourceId('Microsoft.CognitiveServices/accounts', variables('aoaiName'))]",
+        "projectResourceGroupId": "[parameters('projectResourceGroup')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2022-05-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "encryption": {
+                    "services": {
+                        "blob": {
+                            "enabled": true
+                        },
+                        "file": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "minimumTlsVersion": "TLS1_2"
+            },
+            "condition": "[equals(parameters('storageOption'), 'new')]"
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2022-07-01",
+            "name": "[variables('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "tenantId": "[variables('tenantId')]",
+                "sku": {
+                    "name": "standard",
+                    "family": "A"
+                },
+                "accessPolicies": [],
+                "enableSoftDelete": true
+            },
+            "condition": "[equals(parameters('keyVaultOption'), 'new')]"
+        },
+        {
+            "type": "Microsoft.ContainerRegistry/registries",
+            "apiVersion": "2022-02-01-preview",
+            "name": "[variables('containerRegistryName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "adminUserEnabled": false
+            },
+            "condition": "[equals(parameters('containerRegistryOption'), 'new')]"
+        },
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2024-10-01",
+            "name": "[parameters('aoaiName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "S0"
+            },
+            "kind": "[parameters('aoaiKind')]",
+            "properties": {
+                "customSubDomainName": "[toLower(parameters('aoaiName'))]",
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "apiProperties": {}
+            },
+            "condition": "[equals(parameters('aoaiOption'), 'new')]"
+        },
+        {
+            "type": "Microsoft.Search/searchServices",
+            "apiVersion": "2023-11-01",
+            "name": "[parameters('searchName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "standard"
+            },
+            "properties": {
+                "replicaCount": 1,
+                "partitionCount": 1,
+                "hostingMode": "Default"
+            },
+            "condition": "[equals(parameters('searchOption'), 'new')]"
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2023-02-01-preview",
+            "name": "[variables('workspaceName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
+                "[resourceId('Microsoft.ContainerRegistry/registries', variables('containerRegistryName'))]",
+                "[resourceId('Microsoft.CognitiveServices/accounts', variables('aoaiName'))]"
+            ],
+            "tags": "[parameters('tags')]",
+            "kind": "[parameters('kind')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "friendlyName": "[variables('workspaceNameFriendly')]",
+                "storageAccount": "[if(not(equals(parameters('storageOption'), 'none')), variables('storageAccountId'), json('null'))]",
+                "lazyInitSystemDatastores": "[parameters('lazyInitSystemDatastores')]",
+                "keyVault": "[if(not(equals(parameters('keyVaultOption'), 'none')), variables('keyVaultId'), json('null'))]",
+                "containerRegistry": "[if(not(equals(parameters('containerRegistryOption'), 'none')), variables('containerRegistryId'), json('null'))]",
+                "publicNetworkAccess": "[parameters('publicNetworkAccess')]",
+                "managedNetwork": {
+                    "isolationMode": "[parameters('isolationMode')]"
+                },
+                "workspaceHubConfig": {
+                    "defaultWorkspaceResourceGroup": "[variables('projectResourceGroupId')]"
+                }
+            },
+            "resources": [
+                {
+                    "type": "endpoints",
+                    "apiVersion": "2023-08-01-preview",
+                    "name": "Azure.OpenAI",
+                    "dependsOn": [
+                        "[variables('workspaceName')]"
+                    ],
+                    "properties": {
+                        "name": "Azure.OpenAI",
+                        "endpointType": "Azure.OpenAI",
+                        "associatedResourceId": "[if(equals(parameters('aoaiOption'), 'new'),  variables('aoaiId'),if(equals(parameters('endpointResourceId'), 'null'), null(), parameters('endpointResourceId')))]"
+                    },
+                    "condition": "[equals(parameters('endpointOption'), 'create')]"
+                },
+                {
+                    "type": "endpoints",
+                    "apiVersion": "2023-08-01-preview",
+                    "name": "Azure.ContentSafety",
+                    "dependsOn": [
+                        "[variables('workspaceName')]"
+                    ],
+                    "properties": {
+                        "name": "Azure.ContentSafety",
+                        "endpointType": "Azure.ContentSafety",
+                        "associatedResourceId": "[if(equals(parameters('endpointResourceId'), 'null'), null(), parameters('endpointResourceId'))]"
+                    },
+                    "condition": "[equals(parameters('endpointKind'), 'All')]"
+                },
+                {
+                    "type": "endpoints",
+                    "apiVersion": "2023-08-01-preview",
+                    "name": "Azure.Speech",
+                    "dependsOn": [
+                        "[variables('workspaceName')]"
+                    ],
+                    "properties": {
+                        "name": "Azure.Speech",
+                        "endpointType": "Azure.Speech",
+                        "associatedResourceId": "[if(equals(parameters('endpointResourceId'), 'null'), null(), parameters('endpointResourceId'))]"
+                    },
+                    "condition": "[equals(parameters('endpointKind'), 'All')]"
+                }
+            ]
+        }
+    ]
+}

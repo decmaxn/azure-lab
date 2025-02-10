@@ -3,6 +3,38 @@ Following [Deploy DeepSeek R1 using Azure AI Foundry and Build a Web Chatbot | N
 
 After deployment, I have also tested the playground, works fine.
 
+# Deploy the whole stack using ARM
+Copy the ARM template from the portal, and modify the parameters. The deployment is successful.
+```bash
+ResourceGroupName=trg
+az group create --name $ResourceGroupName --location eastus
+
+SubID=$(az account show --query id --output tsv)
+sed s/\$SubID/$SubID/g azure-serverlessai-parameters.json  > parameters.json 
+
+az deployment group create \
+    --resource-group $ResourceGroupName \
+    --template-file azure-serverlessai-template.json \
+    --parameters @parameters.json
+```
+After that, login to portal and manually deploy a model, you will have to created a project if it's not already there. This time I deployed gtp-4o-mini model.
+Clean up
+```bash
+az group delete --name $ResourceGroupName --yes
+
+# The cognitiveservices included in the resource group is only "Soft deleted", need to purge it before create it again.
+az cognitiveservices account list-deleted | jq -r '.[].name'
+# Replace the {accountName} below with the name from the previous command
+az cognitiveservices account purge \
+    --resource-group $ResourceGroupName \
+    --location eastus2 \
+    --name {accountName}
+
+# Same for the key vault, it is only "Soft deleted", need to purge it before create it again.
+az keyvault list-deleted |  jq -r '.[].name'
+# Replace the <vault-name> below with the name from the previous command
+az keyvault purge --name <vault-name>
+```
 # Test using the API
 Prepare the pythong environment. Also copy the code from playground after a working test, replace the API key.
 ```bash

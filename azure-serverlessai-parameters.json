@@ -1,0 +1,78 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "taihub2"
+        },
+        "nameFriendly": {
+            "value": "TestAiHubUseast2"
+        },
+        "environment": {
+            "value": "canary"
+        },
+        "kind": {
+            "value": "Hub"
+        },
+        "publicNetworkAccess": {
+            "value": "Enabled"
+        },
+        "isolationMode": {
+            "value": "Disabled"
+        },
+        "storageAccountName": {
+            "value": "sttaihub2591272750674"
+        },
+        "storageOption": {
+            "value": "new"
+        },
+        "lazyInitSystemDatastores": {
+            "value": false
+        },
+        "keyVaultOption": {
+            "value": "new"
+        },
+        "keyVaultName": {
+            "value": "kv-taihub2591272750674"
+        },
+        "containerRegistryOption": {
+            "value": "none"
+        },
+        "containerRegistryName": {
+            "value": "crtaihub2591272750674"
+        },
+        "projectResourceGroup": {
+            "value": "/subscriptions/$SubID/resourceGroups/trg2"
+        },
+        "location": {
+            "value": "eastus2"
+        },
+        "endpointKind": {
+            "value": "OpenAI"
+        },
+        "aoaiName": {
+            "value": "ai-taihub2591211111111"
+        },
+        "endpointOption": {
+            "value": "none"
+        },
+        "aoaiOption": {
+            "value": "new"
+        },
+        "aoaiKind": {
+            "value": "AIServices"
+        },
+        "searchName": {
+            "value": "none"
+        },
+        "searchOption": {
+            "value": "none"
+        },
+        "endpointResourceId": {
+            "value": "null"
+        },
+        "tags": {
+            "value": {}
+        }
+    }
+}
