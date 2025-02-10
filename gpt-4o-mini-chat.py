@@ -15,11 +15,39 @@ client = AzureOpenAI(
 )
     
     
-IMAGE_PATH = "YOUR_IMAGE_PATH"
-encoded_image = base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode('ascii')
+# IMAGE_PATH = "YOUR_IMAGE_PATH"
+# encoded_image = base64.b64encode(open(IMAGE_PATH, 'rb').read()).decode('ascii')
 
 #Prepare the chat prompt 
-chat_prompt = [] 
+chat_prompt = [
+    {
+        "role": "system",
+        "content": [
+            {
+                "type": "text",
+                "text": "You are an AI assistant that helps people find information."
+            }
+        ]
+    },
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "text",
+                "text": "who are you"
+            }
+        ]
+    },
+    # {
+    #     "role": "assistant",
+    #     "content": [
+    #         {
+    #             "type": "text",
+    #             "text": "I am an AI language model created by OpenAI, designed to assist with a variety of tasks, including answering questions, providing information, and engaging in conversation. How can I help you today?"
+    #         }
+    #     ]
+    # }
+] 
     
 # Include speech result if speech is enabled  
 messages = chat_prompt  

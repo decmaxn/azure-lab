@@ -21,5 +21,4 @@ After creating the same stack in other regions and the tests still failed, I cre
 ```bash
 python gpt-4o-mini-chat.py
 ```
-
-
+The problems are due to the default "copy code" button on portal doesn't give accurate script for now. Modifeed the gpt-4o-mini-chat.py fixed the problems.
