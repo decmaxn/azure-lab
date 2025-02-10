@@ -49,7 +49,9 @@ $ python deepseekr1-chat.py
 ... ...
 openai.InternalServerError: Error code: 500 - {'error': {'code': 'InternalServerError', 'message': 'Backend returned unexpected response. Please contact Microsoft for help.'}}
 ```
-After creating the same stack in other regions and the tests still failed, I created gpt-4o-mini model manually. This time there are different errors.
+After creating the same stack in other regions and the tests still failed, I found the problem is I used the wrong endpoint. Use the endpoint for the model itself works. Refer to "Test using the API with Azure AI model inference" section below for more details.
+
+Also, I created gpt-4o-mini model manually. This time there are different errors.
 ```bash
 python gpt-4o-mini-chat.py
 ```
@@ -61,6 +63,8 @@ cp example.env .env  # Then update the .env file with the API key manually
 pip install -r requirements.txt 
 python gpt-4o-mini-chat.py
 ```
+
+At this point, I found the gpt-4o-mini-chat.py works for deepseekr1 model as well. The only difference is the endpoint/modelname defined in the .env file. So deleted both gpt-4o-mini-chat.py and deepseekr1-chat.py, and created azure-openai-chat.py. This script will read the .env file, and send the chat request.
 
 ## Test using the API with Azure AI model inference
 There are 3 types of end points for the project. "Azure AI inference" is the one we need to use with azure.ai.inference libraries, as in azure--inference-chat.py.
