@@ -6,7 +6,7 @@ After deployment, I have also tested the playground, works fine.
 # Deploy the whole stack using ARM
 Copy the ARM template from the portal, and modify the parameters. The deployment is successful.
 ```bash
-ResourceGroupName=trg
+ResourceGroupName=infra-rg
 az group create --name $ResourceGroupName --location eastus
 
 SubID=$(az account show --query id --output tsv)

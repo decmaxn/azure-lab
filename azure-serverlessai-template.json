@@ -51,7 +51,8 @@
             "defaultValue": "new",
             "allowedValues": [
                 "new",
-                "none"
+                "none",
+                "existing"
             ],
             "type": "String",
             "metadata": {
