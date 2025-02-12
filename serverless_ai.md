@@ -18,11 +18,15 @@ az deployment group create \
     --parameters @parameters.json
 ```
 After that, login to portal and manually deploy a model, you will have to created a project if it's not already there. This time I deployed gtp-4o-mini model.
-Clean up
+## Clean up
+Only the "Azure AI hub" and "Azure AI services" are created by the ARM template. Just delete them instead of deleting the whole resource group. 
 ```bash
-az group delete --name $ResourceGroupName --yes
+az ml workspace delete --name iaihub \
+    --resource-group $ResourceGroupName
+az cognitiveservices account delete --name ai-iaihub \
+    --resource-group $ResourceGroupName
 
-# The cognitiveservices included in the resource group is only "Soft deleted", need to purge it before create it again.
+# The cognitiveservices is only "Soft deleted", need to purge it before create it again.
 for ID in $(az cognitiveservices account list-deleted | jq -r .[].id); do \
     ./purge-congnitive-service-acct-with-id.sh $ID
 done
