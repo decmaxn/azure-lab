@@ -23,17 +23,14 @@ Clean up
 az group delete --name $ResourceGroupName --yes
 
 # The cognitiveservices included in the resource group is only "Soft deleted", need to purge it before create it again.
-az cognitiveservices account list-deleted | jq -r '.[].name'
-# Replace the {accountName} below with the name from the previous command
-az cognitiveservices account purge \
-    --resource-group $ResourceGroupName \
-    --location eastus2 \
-    --name {accountName}
+for ID in $(az cognitiveservices account list-deleted | jq -r .[].id); do \
+    ./purge-congnitive-service-acct-with-id.sh $ID
+done
 
 # Same for the key vault, it is only "Soft deleted", need to purge it before create it again.
-az keyvault list-deleted |  jq -r '.[].name'
-# Replace the <vault-name> below with the name from the previous command
-az keyvault purge --name <vault-name>
+for NAME in $(az keyvault list-deleted |  jq -r '.[].name'); do \
+    az keyvault purge --name $NAME
+done
 ```
 # Test using the API
 Prepare the pythong environment. Also copy the code from playground after a working test, replace the API key.
