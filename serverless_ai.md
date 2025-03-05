@@ -3,10 +3,23 @@ Following [Deploy DeepSeek R1 using Azure AI Foundry and Build a Web Chatbot | N
 
 After deployment, I have also tested the playground, works fine.
 
+## Manually test the model
+After deployed the model as DeepSeek-R1, create a ds-model.env file with the target Uri and Key, test the API simplly with curl:
+```bash
+export $(grep -v '^#' ds-model.env | xargs)
+curl -X POST \
+     -H "Content-Type: application/json" \
+     -H "api-key: $AZURE_OPENAI_API_KEY" \
+     -d '{
+           "messages": [{"role": "user", "content": "who are you"}],
+           "model": "DeepSeek-R1"
+         }' \
+     "$ENDPOINT_URL"
+```
 # Deploy the whole stack using ARM
 Copy the ARM template from the portal, and modify the parameters. The deployment is successful.
 ```bash
-ResourceGroupName=trg
+ResourceGroupName=infra-rg
 az group create --name $ResourceGroupName --location eastus
 
 SubID=$(az account show --query id --output tsv)
@@ -18,11 +31,15 @@ az deployment group create \
     --parameters @parameters.json
 ```
 After that, login to portal and manually deploy a model, you will have to created a project if it's not already there. This time I deployed gtp-4o-mini model.
-Clean up
+## Clean up
+Only the "Azure AI hub" and "Azure AI services" are created by the ARM template. Just delete them instead of deleting the whole resource group. 
 ```bash
-az group delete --name $ResourceGroupName --yes
+az ml workspace delete --name iaihub \
+    --resource-group $ResourceGroupName
+az cognitiveservices account delete --name ai-iaihub \
+    --resource-group $ResourceGroupName
 
-# The cognitiveservices included in the resource group is only "Soft deleted", need to purge it before create it again.
+# The cognitiveservices is only "Soft deleted", need to purge it before create it again.
 for ID in $(az cognitiveservices account list-deleted | jq -r .[].id); do \
     ./purge-congnitive-service-acct-with-id.sh $ID
 done
@@ -46,7 +63,8 @@ $ python deepseekr1-chat.py
 ... ...
 openai.InternalServerError: Error code: 500 - {'error': {'code': 'InternalServerError', 'message': 'Backend returned unexpected response. Please contact Microsoft for help.'}}
 ```
-After creating the same stack in other regions and the tests still failed, I found the problem is I used the wrong endpoint. Use the endpoint for the model itself works. Refer to "Test using the API with Azure AI model inference" section below for more details.
+
+<del>After creating the same stack in other regions and the tests still failed, I found the problem is I used the wrong endpoint. Use the endpoint for the model itself works. Refer to "Test using the API with Azure AI model inference" section below for more details.</del>
 
 Also, I created gpt-4o-mini model manually. This time there are different errors.
 ```bash
@@ -61,20 +79,20 @@ pip install -r requirements.txt
 python gpt-4o-mini-chat.py
 ```
 
-At this point, I found the gpt-4o-mini-chat.py works for deepseekr1 model as well. The only difference is the endpoint/modelname defined in the .env file. So deleted both gpt-4o-mini-chat.py and deepseekr1-chat.py, and created azure-openai-chat.py. This script will read the .env file, and send the chat request.
+<del>At this point, I found the gpt-4o-mini-chat.py works for deepseekr1 model as well. The only difference is the endpoint/modelname defined in the .env file. So deleted both gpt-4o-mini-chat.py and deepseekr1-chat.py, and created azure-openai-chat.py. This script will read the .env file, and send the chat request.</del>
 
 ## Test using the API with Azure AI model inference
-There are 3 types of end points for the project. "Azure AI inference" is the one we need to use with azure.ai.inference libraries, as in azure--inference-chat.py.
+Note: the endpoint for the model is not the same as the one for the project. The endpoint for the model is the one you can find in the "API" tab of the model. The endpoint for the project is the one you can find in the "Overview" tab of the project. The model API endpoint is longer, including the version and deployment name, works with the curl command. 
 
-An other one is for "Azure OpenAI Service", use it with AzureOpenAI library, as in gpt-4o-mini-chat.py.
-
-Using wrong endpoint will result in error like this:
+There are 3 projects endpoints, "Azure AI inference", "Azure OpenAI Service", and "Azure AI Services". Using wrong endpoint will result in error like this:
 ```bash
 azure.core.exceptions.ResourceNotFoundError: (404) Resource not found
 ```
 
-And "Azure AI Services" endpoint to call Computer Vision, Content Safety, Document Intelligence, Language, Translation, and Token services. There are also 2 Speech service's endpoints, one for Speech to Text and the other for Text to Speech.
+The "Azure AI inference" is the one we need to use with azure.ai.inference libraries, as in azure--inference-chat.py. 
 
-There is another endpoint for the specific model, it's longer including api version, and maybe deployment name.
+An other one is for "Azure OpenAI Service", use it with AzureOpenAI library, as in gpt-4o-mini-chat.py. 
+
+And "Azure AI Services" endpoint to call Computer Vision, Content Safety, Document Intelligence, Language, Translation, and Token services. There are also 2 Speech service's endpoints, one for Speech to Text and the other for Text to Speech.
 
 But no matter which endpoints, They all share the same API key. 

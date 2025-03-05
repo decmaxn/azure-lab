@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "taihub2"
+            "value": "iaihub"
         },
         "nameFriendly": {
-            "value": "TestAiHubUseast2"
+            "value": "Ai Hub Infra"
         },
         "environment": {
             "value": "canary"
@@ -21,19 +21,19 @@
             "value": "Disabled"
         },
         "storageAccountName": {
-            "value": "sttaihub2591272750674"
+            "value": "infratsact"
         },
         "storageOption": {
-            "value": "new"
+            "value": "existing"
         },
         "lazyInitSystemDatastores": {
             "value": false
         },
         "keyVaultOption": {
-            "value": "new"
+            "value": "existing"
         },
         "keyVaultName": {
-            "value": "kv-taihub2591272750674"
+            "value": "infratkvault"
         },
         "containerRegistryOption": {
             "value": "none"
@@ -42,16 +42,16 @@
             "value": "crtaihub2591272750674"
         },
         "projectResourceGroup": {
-            "value": "/subscriptions/$SubID/resourceGroups/trg2"
+            "value": "/subscriptions/$SubID/resourceGroups/infra-rg"
         },
         "location": {
-            "value": "eastus2"
+            "value": "eastus"
         },
         "endpointKind": {
             "value": "OpenAI"
         },
         "aoaiName": {
-            "value": "ai-taihub2591211111111"
+            "value": "ai-iaihub"
         },
         "endpointOption": {
             "value": "none"
